@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %} | Cart {% endblock %}
+{% block content %}
+<div class="my-form container p-5 my-5 rounded border border-warning">
+    <h2 class="text-center">Cart</h2>
+        <hr>
+    {% if not request.user.is_authenticated and request.user.is_anonymouse %}
+        <h5 class="alert alert-warning">
+            you must be 
+            <a href="{% url "signin" %}" class="text-dark">
+                logged in 
+            </a>
+        </h5>
+    {% elif order %}
+        <h5>
+            full name:{{order.user.first_name|add:" "|add:order.user.last_name}}
+            <hr>
+            Orede number:{{order.id}} with total:{{total}}$
+        </h5>
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">product</th>
+                        <th scope="col">Image</th>
+                        <th scope="col">Quantity</th>
+                        <th scope="col">price</th>
+                        <th scope="col">subtotal</th>
+                        <th scope="col">control</th>
+                    </tr>
+                </thead>
+            {% for line in orderdetails %}
+                <tbody>
+                    <tr>
+                        <th scope="row">{{forloop.counter}}</th>
+                        <td>{{line.product.name}} </td>
+                        <td><img src ="{{line.product.photo.url}}" style ="width:80px;hight:80px"></td>
+                        <td>
+                            <a href="{% url "sub_qty" orderdetails_id=line.id %}" class ="btn btn-outline-warning btn-sm"> - <a/>
+                            {{line.quantity}}
+                            <a href="{% url "add_qty" orderdetails_id=line.id %}" class ="btn btn-outline-warning btn-sm"> + <a/>
+                        </td>
+                        <td>{{line.price}}</td>
+                        <td>{% widthratio line.quantity 1 line.price %}</td>
+                        <td>
+                            <a class ="btn btn-outline-danger btn-sm" href="{% url 'remove_from_cart' orderdetails_id=line.id %}">
+                                Remove
+                            </a> 
+                        </td>
+                    </tr>
+            {% empty %}
+                <h4>
+                    No order here <a type="submit" href="{% url 'products' %}" class="btn btn-warning">All products</a>
+                </h4>
+            {% endfor %} 
+                </tbody>
+            </table>
+            
+    {% else %}
+        <h4>
+            No order here <a type="submit" href="{% url 'products' %}" class="btn btn-warning">All products</a>
+        </h4>
+    {% endif %}
+
+
+</div>        
+
+{% endblock %}
